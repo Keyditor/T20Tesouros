@@ -25,6 +25,7 @@ async def on_message(message):
             await message.reply("**Algo está faltando!!**\n Lembre-se de imformar o ND da rolagem de tesouros\n Ex:. $loot **2** | $loot **1/4**")
 
     if message.content.startswith('$exit'):
+        await message.reply("*** ==> CAMBIO E DESLIGO! <== ***")
         exit()
 
     try:
