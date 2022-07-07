@@ -40,20 +40,50 @@ def RollLoot(nd):
 
 
 def DiceRoll(Dado):
-    DadoS = Dado.split("d")
+
+    VanDis = ""
+    print(Dado," DADO")
+    DadoC = Dado.lower()
+    DadoC = DadoC.split(" ")
+
+    try:
+
+        if DadoC[1] == "adv":
+            print("Com Vantagem")
+            VanDis = "adv"
+            DadoL = DadoC[0]
+            print(VanDis,"VanDis")
+        elif DadoC[1] == "dis":
+            print("Com Desvantagem")
+            VanDis = "dis"
+            DadoL = DadoC[0]
+            print(VanDis,"VanDis")
+        else:
+            VanDis = ""
+            DadoL = Dado
+    except:
+        print("Sem Vantagem ou Desvantagem!")
+        VanDis = ""
+        DadoL = Dado
+        pass
+
+    DadoS = DadoL.split("d")
     print(DadoS," DADOS")
     seMod = f'{DadoS[1]}'
     Mod = ""
     Tdado = DadoS[1]
     TMod = ""
+
+    print(Dado, "DADO")
+
     if seMod.find("+") != -1 :
         seMod = seMod.split("+")
-        print("Ok")
+        print("+")
         print(seMod)
         Tdado = seMod[0]
         Mod = seMod[1]
         TMod = "+"
-        print(DadoS, Tdado, Mod, " ISSO")
+        #print(DadoS, Tdado, Mod, " ISSO")
     elif seMod.find("-") != -1 :
         seMod = seMod.split("-")
         Tdado = seMod[0]
@@ -69,7 +99,11 @@ def DiceRoll(Dado):
         Tdado = seMod[0]
         Mod = seMod[1]
         TMod = "/"
-    print(DadoS,Tdado,Mod," ISSO")
+    else:
+        Tdado = DadoS[1]
+        print(Tdado," Tdado")
+    #print(DadoS,Tdado,Mod," ISSO")
+
     if isinstance(seMod, int) :
         print("DadoS é INT!!")
     else:
@@ -105,24 +139,70 @@ def DiceRoll(Dado):
             FSoma = Soma / int(Mod)
         else:
             FSoma = Soma
+        if VanDis != "":
+            if VanDis == "adv":
+                for i in rollsF:
+                    FSoma = i
+                    print(FSoma," Atual FSoma")
+            if VanDis == "dis":
+                FSoma = rollsF[0]
+                print(FSoma," FSoma")
+
+        lenRolls = rollsF.__len__()
+        print(lenRolls," lenRolls")
         rollsF = rollsF.__str__().replace("'","")
         FSoma = int(FSoma)
         PCrit = 0
         NCrit = 0
-        for i in dice.roll_max(FDados):
-            PCrit = PCrit + i
-        for i in dice.roll_min(FDados):
-            NCrit = NCrit + i
-        print(PCrit,NCrit,"P N")
-        if FSoma == PCrit:
-            RollRusult = f' ```ini\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
-        elif FSoma == NCrit:
-            RollRusult = f' ```css\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+
+        if lenRolls >> 1:
+            print("Rolagem de multiplos dados")
+            for i in dice.roll_max(FDados):
+                PCrit = PCrit + i
+            for i in dice.roll_min(FDados):
+                NCrit = NCrit + i
+            print(PCrit,NCrit,"P N")
+            if FSoma >= PCrit:
+                RollRusult = f' ```ini\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                print(RollRusult)
+            elif FSoma <= NCrit:
+                RollRusult = f' ```css\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                print(RollRusult)
+            else:
+                RollRusult = f' ```fix\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                print(RollRusult)
         else:
-            RollRusult = f' ```fix\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+            print("Rolagem de Dado Unico")
+            PCrit = dice.roll_max(FDados)
+            NCrit = dice.roll_min(FDados)
+            PCrit = str(PCrit).replace("[","")
+            PCrit = str(PCrit).replace("]", "")
+            NCrit = str(NCrit).replace("[", "")
+            NCrit = str(NCrit).replace("]", "")
+            PCrit = f'[**{PCrit}**]'
+            NCrit = f'[**{NCrit}**]'
+            print(PCrit, NCrit, "P N")
+            print(rollsF, " rollsF ",rollsF)
+            #rollsF = rollsF.replace("[","")
+            #rollsF = rollsF.replace("]","")
+            #rollsF = int(rollsF)
+
+            try:
+                if rollsF == PCrit:
+                    RollRusult = f' ```ini\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                    print(RollRusult)
+                elif rollsF == NCrit:
+                    RollRusult = f' ```css\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                    print(RollRusult)
+                else:
+                    RollRusult = f' ```fix\n[{FSoma}]``` Rolagem: {rollsF}=**{Soma}**{TMod}{Mod} | ***{Dado}***'
+                    print(RollRusult)
+            except:
+                print(" Deu Cocô :/")
         #rolls = rolls.replace(maxDice, f'**{maxDice}**')
         #rolls = rolls.replace(minDice, f'**{minDice}**')
         #print(f'Rolei {rollsF}')
+        print("RR: ",RollRusult)
     return  RollRusult
 
 # Press the green button in the gutter to run the script.
